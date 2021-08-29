@@ -1,16 +1,15 @@
 namespace NextServer
 {
+    using System.Text.Json;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+    using NextServer.Authentication;
+    using NextServer.Hubs;
+    using Redis;
 
     public class Startup
     {
@@ -23,24 +22,41 @@ namespace NextServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            var configuration = this.Configuration.Get<Configuration>();
+
+            services
+                .AddAuthentication()
+                .AddScheme<SimpleAuthenticationHandlerOptions, SimpleAuthenticationHandler>(
+                    "simple",
+                    null);
+
+            services.AddAuthorization(o =>
+            {
+                o.DefaultPolicy = new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes("simple")
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+
+            services
+                .AddRedisStorage(configuration.Redis)
+                .AddSqlStorage(configuration.Sql)
+                .AddSignalR()
+                .AddJsonProtocol(o =>
+                {
+                    o.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseRouting()
+                .UseAuthentication()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapHub<NextChatHub>("/next-chat");
+                });
         }
     }
 }

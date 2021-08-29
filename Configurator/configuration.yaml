@@ -1,0 +1,2 @@
+sql:
+  connectionString: Server=localhost;Database=next-chat;Uid=root;Pwd=qqq111;

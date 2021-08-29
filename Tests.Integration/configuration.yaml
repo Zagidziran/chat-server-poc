@@ -1,0 +1,4 @@
+redis:
+  connectionString: localhost:6379
+sql:
+  connectionString: Server=localhost;Database=next-chat;Uid=root;Pwd=qqq111;Allow User Variables=True;

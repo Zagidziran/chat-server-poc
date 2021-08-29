@@ -3,9 +3,8 @@
     using System.Threading.Tasks;
     using Core.Model;
 
-
-    public interface IMessagesHandler
+    public interface INextChatServer
     {
-        Task OnMessage(Message message);
+        void Cool();
     }
 }

@@ -2,5 +2,14 @@
 {
     using System;
 
-    public record Message(string? Id, string AuthorId, string GroupId, DateTimeOffset SendTime, string Text);
+    public record Message()
+    {
+        public string AuthorId { get; init; }
+        
+        public string GroupId { get; init; }
+        
+        public DateTimeOffset SendTime { get; init; }
+        
+        public string Text { get; init; }
+    }
 }
