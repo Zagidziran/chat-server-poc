@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,7 +29,9 @@
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\NextServer\NextServer.csproj" />
     <ProjectReference Include="..\Redis\Redis.csproj" />
+    <ProjectReference Include="..\SignalR\SignalR.csproj" />
     <ProjectReference Include="..\Sql\Sql.csproj" />
+    <ProjectReference Include="..\Tests.Common\Tests.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

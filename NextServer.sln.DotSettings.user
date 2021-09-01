@@ -1,12 +1,9 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=27f78341_002D93bc_002D4a84_002Da06b_002Db3ebf98bf012/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ShouldSendAndReceiveMessage" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::3E6093D7-F7C4-4F6C-B7CB-065909DC9FF0::net5.0::Tests.Integration.RedisMessagesTransportTests.ShouldSendAndReceiveMessage&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::3E6093D7-F7C4-4F6C-B7CB-065909DC9FF0::net5.0::Tests.Integration.RedisGroupServiceTests.DoubleTricks&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::3E6093D7-F7C4-4F6C-B7CB-065909DC9FF0::net5.0::Tests.Integration.RedisGroupServiceTests&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::3E6093D7-F7C4-4F6C-B7CB-065909DC9FF0::net5.0::Tests.Integration.RedisMessagesTransportTests.ShouldNotReceiveMessageFromRandomGroup&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::3E6093D7-F7C4-4F6C-B7CB-065909DC9FF0::net5.0::Tests.Integration.RedisMessagesTransportTests&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::3E6093D7-F7C4-4F6C-B7CB-065909DC9FF0::net5.0::Tests.Integration.SqlMessagesHistoryServiceTests&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::3E6093D7-F7C4-4F6C-B7CB-065909DC9FF0::net5.0::Tests.Integration.HubTests.ShouldReturnUnauthorized&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
+  &lt;Or&gt;&#xD;
+    &lt;Project Location="C:\Temp\chat\chat-server-poc\Tests.Integration" Presentation="&amp;lt;Tests.Integration&amp;gt;" /&gt;&#xD;
+    &lt;TestAncestor&gt;&#xD;
+      &lt;TestId&gt;xUnit::65756E5D-8ADC-4D12-8548-0D690A490B81::net5.0::Tests.Unit.GroupStatusCacheTests&lt;/TestId&gt;&#xD;
+    &lt;/TestAncestor&gt;&#xD;
+  &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

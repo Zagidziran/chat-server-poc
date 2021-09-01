@@ -1,15 +1,17 @@
 namespace NextServer
 {
     using System.Text.Json;
+    using Core;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
     using NextServer.Authentication;
     using NextServer.Hubs;
     using Redis;
+    using Services;
+    using Sql;
 
     public class Startup
     {
@@ -22,18 +24,20 @@ namespace NextServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var configuration = this.Configuration.Get<Configuration>();
+            var configuration = this.Configuration.Get<Configuration.Configuration>();
 
             services
+                .AddSingleton(configuration.Server)
+                .AddServices()
                 .AddAuthentication()
                 .AddScheme<SimpleAuthenticationHandlerOptions, SimpleAuthenticationHandler>(
-                    "simple",
+                    AuthenticationSchemes.Simple,
                     null);
 
             services.AddAuthorization(o =>
             {
                 o.DefaultPolicy = new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes("simple")
+                    .AddAuthenticationSchemes(AuthenticationSchemes.Simple)
                     .RequireAuthenticatedUser()
                     .Build();
             });
@@ -41,6 +45,7 @@ namespace NextServer
             services
                 .AddRedisStorage(configuration.Redis)
                 .AddSqlStorage(configuration.Sql)
+                .AddSingleton<IMessagesHandler, MessagesHandler>()
                 .AddSignalR()
                 .AddJsonProtocol(o =>
                 {

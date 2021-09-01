@@ -1,4 +1,4 @@
-﻿namespace NextServer
+﻿namespace NextServer.Configuration
 {
     using System;
     using Microsoft.Extensions.Configuration;
@@ -14,6 +14,8 @@
         public RedisGroupsServiceConfiguration Groups { get; init; } = new RedisGroupsServiceConfiguration();
 
         public SqlMessagesHistoryServiceConfiguration Sql { get; init; } = new SqlMessagesHistoryServiceConfiguration();
+
+        public ServerConfiguration Server { get; init; } = new ServerConfiguration();
 
         public static Configuration GetInstance() => instance.Value;
 

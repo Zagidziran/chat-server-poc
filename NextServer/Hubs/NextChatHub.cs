@@ -1,5 +1,6 @@
 ﻿namespace NextServer.Hubs
 {
+    using System;
     using Core;
     using Core.Client;
     using Core.Model;
@@ -7,9 +8,12 @@
     using Microsoft.AspNetCore.SignalR;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Core.Server;
+    using NextServer.Configuration;
+    using Services;
 
     [Authorize]
-    public class NextChatHub : Hub<INextChatClient>, IMessagesHandler
+    public class NextChatHub : Hub<INextChatClient>, INextChatServer
     {
         private readonly IGroupsService groupsService;
 
@@ -17,25 +21,38 @@
 
         private readonly IMessagesHistoryService messagesHistoryService;
 
+        private readonly IGroupStatusCache groupStatusCache;
+
+        private readonly ServerConfiguration serverConfiguration;
+
         public NextChatHub(
             IGroupsService groupsService,
             IMessagesTransportService messagesTransportService,
-            IMessagesHistoryService messagesHistoryService)
+            IMessagesHistoryService messagesHistoryService,
+            IGroupStatusCache groupStatusCache,
+            ServerConfiguration serverConfiguration)
         {
             this.groupsService = groupsService;
             this.messagesTransportService = messagesTransportService;
             this.messagesHistoryService = messagesHistoryService;
-            this.messagesTransportService.SetMessageHandler(this);
+            this.groupStatusCache = groupStatusCache;
+            this.serverConfiguration = serverConfiguration;
         }
 
         public async Task<GroupJoinResult> JoinGroup(string groupId)
         {
+            var userId = this.Context.UserIdentifier!;
             await this.Groups.AddToGroupAsync(this.Context.ConnectionId, groupId);
-            var result = await this.groupsService.Join(groupId, this.Context.UserIdentifier!);
+
+            var result = await this.groupsService.Join(groupId, userId);
 
             if (result == GroupJoinResult.Ok)
             {
-                await this.messagesTransportService.Subscribe(groupId);
+                if (JoinGroupVerdict.NeedSubscribe == this.groupStatusCache.OnJoinGroup(userId, groupId))
+                {
+                    await this.messagesTransportService.Subscribe(groupId);
+                }
+
                 var history = await this.messagesHistoryService.GetHistory(groupId);
                 await this.Clients.Caller.OnHistory(history);
             }
@@ -68,13 +85,30 @@
                 AuthorId = this.Context.UserIdentifier!,
             };
 
-            var messageWithDate = await this.messagesHistoryService.CreateMessage(message);
-            await this.messagesTransportService.SendMessage(messageWithDate);
+            var saveMessageTask = this.messagesHistoryService.CreateMessage(message);
+            var timeoutTask = Task.Delay(this.serverConfiguration.MessagesHistory.SaveMessageTimeout);
+            
+            if (saveMessageTask == await Task.WhenAny(saveMessageTask, timeoutTask))
+            {
+                await this.messagesTransportService.SendMessage(saveMessageTask.Result);
+            }
+            else
+            {
+                // We still want to send message even history persistence is down
+                await this.messagesTransportService.SendMessage(message with { SendTime = DateTimeOffset.UtcNow });
+            }
         }
 
-        async Task IMessagesHandler.OnMessage(Message message)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            await this.Clients.Groups(message.GroupId).OnMessage(message);
+            var userId = this.Context.UserIdentifier!;
+            var groupsToLeave = this.groupStatusCache.OnDisconnect(userId);
+
+            foreach (var groupId in groupsToLeave)
+            {
+                // TODO: Improve repository contract with batching for the case
+                await this.groupsService.Leave(groupId, userId);
+            }
         }
     }
 }

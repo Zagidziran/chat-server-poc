@@ -30,6 +30,7 @@
                     var claims = new[]
                     {
                         new Claim("sub", subject),
+                        new Claim(ClaimTypes.NameIdentifier, subject),
                     };
 
                 var identity = new ClaimsIdentity(claims, this.Scheme.Name);

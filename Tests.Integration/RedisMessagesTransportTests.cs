@@ -23,10 +23,13 @@
 
         private readonly ServiceProvider sp;
 
+        private readonly Mock<IMessagesHandler> messagesHandlerMock = new Mock<IMessagesHandler>();
+
         public RedisMessagesTransportTests()
         {
             var sc = new ServiceCollection();
             sc.AddRedisStorage(Configuration.GetInstance().Redis);
+            sc.AddSingleton(this.messagesHandlerMock.Object);
             this.sp = sc.BuildServiceProvider();
             this.sut = (RedisMessagesTransportService)this.sp.GetRequiredService<IMessagesTransportService>();
             this.groupService = (RedisGroupsService)this.sp.GetRequiredService<IGroupsService>();
@@ -36,16 +39,15 @@
 
         [Theory]
         [AutoData]
-        public async Task ShouldSendAndReceiveMessage(Message message, Mock<IMessagesHandler> messagesHandlerMock)
+        public async Task ShouldSendAndReceiveMessage(Message message)
         {
             var messageReceivedEvent = new AutoResetEvent(false);
             var effectiveMessage = message with { GroupId = this.testGroup.GroupId };
-            messagesHandlerMock
+            this.messagesHandlerMock
                 .Setup(h => h.OnMessage(effectiveMessage))
                 .Callback((Message _) => messageReceivedEvent.Set());
             
             
-            this.sut.SetMessageHandler(messagesHandlerMock.Object);
             await this.sut.SendMessage(effectiveMessage);
 
             await messageReceivedEvent.WithTimeout(TimeSpan.FromSeconds(3));
@@ -53,19 +55,18 @@
 
         [Theory]
         [AutoData]
-        public async Task ShouldNotReceiveMessageFromRandomGroup(Message message, Mock<IMessagesHandler> messagesHandlerMock)
+        public async Task ShouldNotReceiveMessageFromRandomGroup(Message message)
         {
             Group group = null;
             try
             {
                 var messageReceivedEvent = new AutoResetEvent(false);
-                messagesHandlerMock
+                this.messagesHandlerMock
                     .Setup(h => h.OnMessage(message))
                     .Callback((Message _) => messageReceivedEvent.Set());
 
                 group = await this.groupService.CreateGroup(message.GroupId);
 
-                this.sut.SetMessageHandler(messagesHandlerMock.Object);
                 await this.sut.SendMessage(message);
 
                 // A second is pretty enough for transport layer 
@@ -81,15 +82,14 @@
 
         [Theory]
         [AutoData]
-        public async Task ShouldNotReceiveMessageAfterUnsubscribe(Message message, Mock<IMessagesHandler> messagesHandlerMock)
+        public async Task ShouldNotReceiveMessageAfterUnsubscribe(Message message)
         {
             var messageReceivedEvent = new AutoResetEvent(false);
             var effectiveMessage = message with { GroupId = this.testGroup.GroupId };
-            messagesHandlerMock
+            this.messagesHandlerMock
                 .Setup(h => h.OnMessage(message))
                 .Callback((Message _) => messageReceivedEvent.Set());
 
-            this.sut.SetMessageHandler(messagesHandlerMock.Object);
             await this.sut.Unsubscribe(this.testGroup.GroupId);
             await this.sut.SendMessage(effectiveMessage);
 
@@ -101,20 +101,21 @@
 
         [Theory]
         [AutoData]
-        public async Task ShouldReceiveMessageFromAnotherInstance(Message message, Mock<IMessagesHandler> messagesHandlerMock)
+        public async Task ShouldReceiveMessageFromAnotherInstance(Message message)
         {
             var messageReceivedEvent = new AutoResetEvent(false);
             var effectiveMessage = message with { GroupId = this.testGroup.GroupId };
-            messagesHandlerMock
+            this.messagesHandlerMock
                 .Setup(h => h.OnMessage(effectiveMessage))
                 .Callback((Message _) => messageReceivedEvent.Set());
 
-            var anotherInstance = new RedisMessagesTransportService(Configuration.GetInstance().Redis);
-            this.sut.SetMessageHandler(messagesHandlerMock.Object);
+            var anotherInstance = new RedisMessagesTransportService(
+                Configuration.GetInstance().Redis,
+                Mock.Of<IMessagesHandler>());
 
             await anotherInstance.SendMessage(effectiveMessage);
 
-            await messageReceivedEvent.WithTimeout(TimeSpan.FromSeconds(3));
+            await messageReceivedEvent.WithTimeout(TimeSpan.FromSeconds(10000));
         }
 
         public void Dispose()

@@ -1,8 +1,7 @@
-﻿namespace Redis
+﻿namespace Sql
 {
     using Core;
     using Microsoft.Extensions.DependencyInjection;
-    using Sql;
 
     public static class ServiceCollectionExtensions
     {

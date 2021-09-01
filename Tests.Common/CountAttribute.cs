@@ -1,4 +1,4 @@
-﻿namespace Tests.Integration
+﻿namespace Tests.Common
 {
     using System.Reflection;
     using AutoFixture;

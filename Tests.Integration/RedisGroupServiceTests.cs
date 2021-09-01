@@ -9,6 +9,7 @@
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
     using Redis;
+    using Tests.Common;
     using Xunit;
 
     public class RedisGroupServiceTests : IDisposable

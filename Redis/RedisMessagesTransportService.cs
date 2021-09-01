@@ -9,14 +9,17 @@
 
     internal sealed class RedisMessagesTransportService : RedisServiceBase, IMessagesTransportService
     {
-        private IMessagesHandler? handler;
+        private readonly IMessagesHandler handler;
 
         private readonly Lazy<Task<ISubscriber>> subscriber;
 
-        public RedisMessagesTransportService(RedisClientConfiguration configuration)
+        public RedisMessagesTransportService(
+            RedisClientConfiguration configuration,
+            IMessagesHandler handler)
             : base(configuration)
         {
             this.subscriber = new Lazy<Task<ISubscriber>>(this.CreateSubscriber);
+            this.handler = handler;
         }
 
         public async Task SendMessage(Message message)
@@ -31,11 +34,6 @@
             });
 
             await multiplexer.GetSubscriber().PublishAsync(message.GroupId, serializedMessage);
-        }
-
-        public void SetMessageHandler(IMessagesHandler handler)
-        {
-            this.handler = handler;
         }
 
         public async Task Subscribe(string groupId)
@@ -69,7 +67,7 @@
                 {
                     var deserializedMessage = JsonSerializer.Deserialize<Message>(message.ToString());
                     var resultMessage = deserializedMessage with {GroupId = channel.ToString()};
-                    await (this.handler?.OnMessage(resultMessage) ?? Task.CompletedTask);
+                    await this.handler.OnMessage(resultMessage);
                 }
                 catch
                 {

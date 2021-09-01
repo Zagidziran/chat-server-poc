@@ -5,7 +5,6 @@
     using System.Data;
     using System.Globalization;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
     using Core;
     using Core.Model;
@@ -42,10 +41,12 @@
 
         public async Task<IReadOnlyCollection<Message>> GetHistory(string groupId)
         {
-            var command = "SELECT * FROM MessagesHistory ORDER BY SendTime DESC, ID DESC";
+            var command = "SELECT * FROM MessagesHistory " +
+                          "WHERE groupId=@groupId " +
+                          "ORDER BY SendTime, ID";
 
             await using var connection = this.CreateConnection();
-            var result = await connection.QueryAsync<Message>(command);
+            var result = await connection.QueryAsync<Message>(command, new { groupId });
 
             return result.ToList();
         }

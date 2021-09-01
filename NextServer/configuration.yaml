@@ -1,4 +1,8 @@
 redis:
   connectionString: localhost:6379
 sql:
-  connectionString: Server=localhost;Database=next-chat;Uid=root;Pwd=qqq111;Allow User Variables=True;
+  connectionString: Server=localhost;Database=next-chat ;Uid=root;Pwd=qqq111;Allow User Variables=True;
+server: 
+  messagesHistory:
+    saveMessageTimeout: 00:00:00.500
+  
