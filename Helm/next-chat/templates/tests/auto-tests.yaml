@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: next-chat-tests
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+  - name: next-chat-tests
+    image: "next-chat/tests:latest"
+    imagePullPolicy: {{ .Values.imagePullPolicy }}
+    env:
+      - name: nextChat__uri
+        value: {{ .Values.tests.nextChat.uri }}
+  restartPolicy: Never

@@ -1,0 +1,11 @@
+apiVersion: "v1"
+name: next-chat
+version: 0.0.1
+appVersion: 0.0.1
+description: An ultimate chat solution
+keywords:
+ - chat
+sources:
+ - https://github.com/Zagidziran/chat-server-poc
+maintainers:
+ - name: Zagidziran

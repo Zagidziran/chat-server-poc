@@ -41,7 +41,7 @@
         [AutoData]
         public async Task ShouldSendAndReceiveMessage(Message message)
         {
-            var messageReceivedEvent = new AutoResetEvent(false);
+            using var messageReceivedEvent = new AutoResetEvent(false);
             var effectiveMessage = message with { GroupId = this.testGroup.GroupId };
             this.messagesHandlerMock
                 .Setup(h => h.OnMessage(effectiveMessage))
@@ -60,7 +60,7 @@
             Group group = null;
             try
             {
-                var messageReceivedEvent = new AutoResetEvent(false);
+                using var messageReceivedEvent = new AutoResetEvent(false);
                 this.messagesHandlerMock
                     .Setup(h => h.OnMessage(message))
                     .Callback((Message _) => messageReceivedEvent.Set());
@@ -84,7 +84,7 @@
         [AutoData]
         public async Task ShouldNotReceiveMessageAfterUnsubscribe(Message message)
         {
-            var messageReceivedEvent = new AutoResetEvent(false);
+            using var messageReceivedEvent = new AutoResetEvent(false);
             var effectiveMessage = message with { GroupId = this.testGroup.GroupId };
             this.messagesHandlerMock
                 .Setup(h => h.OnMessage(message))
@@ -103,7 +103,7 @@
         [AutoData]
         public async Task ShouldReceiveMessageFromAnotherInstance(Message message)
         {
-            var messageReceivedEvent = new AutoResetEvent(false);
+            using var messageReceivedEvent = new AutoResetEvent(false);
             var effectiveMessage = message with { GroupId = this.testGroup.GroupId };
             this.messagesHandlerMock
                 .Setup(h => h.OnMessage(effectiveMessage))

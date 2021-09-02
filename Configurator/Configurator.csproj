@@ -18,6 +18,9 @@
     <None Update="configuration.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="dockerfile">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="initialize-script.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

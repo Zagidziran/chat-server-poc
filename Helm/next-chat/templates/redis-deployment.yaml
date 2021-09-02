@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: next-chat-redis
+  labels:
+    next: chat
+    name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      next: chat
+      name: redis
+  template:
+    metadata:
+      labels:
+        next: chat
+        name: redis
+    spec:
+      containers:
+      - name: app
+        image: redis:6.0.9-alpine
+        command: ["redis-server", "--appendonly", "no", "--notify-keyspace-events", "Kxg"]
+        ports:
+          - name: redis-port
+            containerPort: 6379
+            protocol: TCP

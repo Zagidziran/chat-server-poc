@@ -4,6 +4,13 @@
     &lt;Project Location="C:\Temp\chat\chat-server-poc\Tests.Integration" Presentation="&amp;lt;Tests.Integration&amp;gt;" /&gt;&#xD;
     &lt;TestAncestor&gt;&#xD;
       &lt;TestId&gt;xUnit::65756E5D-8ADC-4D12-8548-0D690A490B81::net5.0::Tests.Unit.GroupStatusCacheTests&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::7DC91AA3-CA5D-4EEE-AD84-CBD8F3D2D79B::net5.0::Tests.Auto.ChatTests.ShouldSendAndReceiveMessage&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::7DC91AA3-CA5D-4EEE-AD84-CBD8F3D2D79B::net5.0::Tests.Auto.ChatTests.ShouldSendAndReceiveManyMessages&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::7DC91AA3-CA5D-4EEE-AD84-CBD8F3D2D79B::net5.0::Tests.Auto.ChatTests.ShouldReceiveOtherUsersMessage&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::7DC91AA3-CA5D-4EEE-AD84-CBD8F3D2D79B::net5.0::Tests.Auto.ChatTests.ShouldReturnNoRoom&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::7DC91AA3-CA5D-4EEE-AD84-CBD8F3D2D79B::net5.0::Tests.Auto.ChatTests.ShouldBeOkOnModerateRate&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::7DC91AA3-CA5D-4EEE-AD84-CBD8F3D2D79B::net5.0::Tests.Auto.PerformanceTests&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::7DC91AA3-CA5D-4EEE-AD84-CBD8F3D2D79B::net5.0::Tests.Auto.FunctionalTests&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

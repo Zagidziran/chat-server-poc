@@ -9,7 +9,7 @@ using NextClient.CommandLine;
 using SignalR;
 
 var connected = false;
-INextChatServer server = null;
+INextChatServer server = null!;
 
 while (true)
 {
@@ -18,13 +18,12 @@ while (true)
         if (!connected)
         {
             var command = Parser.Default.ParseArguments<ConnectCommand, ByeCommand>(
-                Console.ReadLine().Split(' '));
+                Console.ReadLine()?.Split(' '));
 
             switch (command)
             {
                 case Parsed<object> {Value: ByeCommand}:
-                    Environment.Exit(0);
-                    break;
+                    return 0;
 
                 case Parsed<object> {Value: ConnectCommand connect}:
                     server = await NextChatServerClientFactory.CreateClient(new NextChatConfiguration
@@ -42,13 +41,12 @@ while (true)
         {
             var command = Parser.Default
                 .ParseArguments<CreateCommand, JoinCommand, LeaveCommand, ListCommand, SayCommand, ByeCommand>(
-                    Console.ReadLine().Split(' '));
+                    Console.ReadLine()?.Split(' '));
 
             switch (command)
             {
                 case Parsed<object> {Value: ByeCommand}:
-                    Environment.Exit(0);
-                    break;
+                    return 0;
 
                 case Parsed<object> {Value: CreateCommand create}:
                     await server.CreateGroup(create.GroupId);
@@ -60,13 +58,14 @@ while (true)
                     {
                         Console.WriteLine("No room :(");
                     }
+
                     break;
 
                 case Parsed<object> {Value: LeaveCommand leave}:
                     await server.LeaveGroup(leave.GroupId);
                     break;
 
-                case Parsed<object> { Value: ListCommand list }:
+                case Parsed<object> {Value: ListCommand list}:
                     var groups = await server.ListGroups();
                     Console.WriteLine(string.Join(", ", groups.Select(g => g.GroupId)));
                     break;
@@ -80,5 +79,9 @@ while (true)
     catch (Exception ex)
     {
         Console.WriteLine(ex.Message);
+    }
+    finally
+    {
+        (server as IDisposable)?.Dispose();
     }
 }

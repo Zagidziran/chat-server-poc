@@ -1,0 +1,12 @@
+nextChat:
+  uri: http://localhost:5000/next-chat
+
+functionalTests:
+  messageWaitTimeout: 00:00:01
+  messagesBulkWaitTimeout: 00:00:05
+
+performanceTests:
+  duration: 00:00:20
+  rate: 50
+  messageLength: 1000
+  expectedMeanLatency: 00:00:00.2

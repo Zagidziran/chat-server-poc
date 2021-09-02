@@ -104,7 +104,7 @@
                 && history.First().Text == message
                 && history.First().GroupId == groupId;
 
-            var historyReceivedEvent = new AutoResetEvent(false);
+            using var historyReceivedEvent = new AutoResetEvent(false);
             this.messagesHandlerMock
                 .Setup(m => m.OnHistory(It.IsAny<IReadOnlyCollection<Message>>()))
                 .Callback((IReadOnlyCollection<Message> _) => historyReceivedEvent.Set())
@@ -136,7 +136,7 @@
                 && msg.Text == text
                 && msg.AuthorId == this.userId;
 
-            var messageReceivedEvent = new AutoResetEvent(false);
+            using var messageReceivedEvent = new AutoResetEvent(false);
 
             this.messagesHandlerMock
                 .Setup(m => m.OnMessage(It.IsAny<Message>()))

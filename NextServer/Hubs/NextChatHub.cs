@@ -42,12 +42,13 @@
         public async Task<GroupJoinResult> JoinGroup(string groupId)
         {
             var userId = this.Context.UserIdentifier!;
-            await this.Groups.AddToGroupAsync(this.Context.ConnectionId, groupId);
 
             var result = await this.groupsService.Join(groupId, userId);
 
             if (result == GroupJoinResult.Ok)
             {
+                await this.Groups.AddToGroupAsync(this.Context.ConnectionId, groupId);
+
                 if (JoinGroupVerdict.NeedSubscribe == this.groupStatusCache.OnJoinGroup(userId, groupId))
                 {
                     await this.messagesTransportService.Subscribe(groupId);

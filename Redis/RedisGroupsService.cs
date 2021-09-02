@@ -43,7 +43,7 @@
             return participantIds.ToStringArray();
         }
 
-        public async Task Leave(string userId, string groupId)
+        public async Task Leave(string groupId, string userId)
         {
             var multiplexer = await this.GetMultiplexer();
             var database = multiplexer.GetDatabase();
@@ -54,7 +54,7 @@
                 .SortedSetRemoveAsync(groupKey, userId);
         }
 
-        public async Task<GroupJoinResult> Join(string userId, string groupId)
+        public async Task<GroupJoinResult> Join(string groupId, string userId)
         {
             var multiplexer = await this.GetMultiplexer();
             var database = multiplexer.GetDatabase();

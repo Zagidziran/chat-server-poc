@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: next-chat-server
+  labels:
+    next: chat
+    name: server
+spec:
+  replicas: {{ .Values.server.replicas }}
+  selector:
+    matchLabels:
+      next: chat
+      name: server
+  template:
+    metadata:
+      labels:
+        next: chat
+        name: server
+    spec:
+      containers:
+      - name: next-chat-server
+        image: next-chat/server:latest
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        env:
+        - name: sql__connectionString
+          value: {{ .Values.sql.connectionString }}
+        - name: redis__connectionString
+          value: {{ .Values.redis.connectionString }}

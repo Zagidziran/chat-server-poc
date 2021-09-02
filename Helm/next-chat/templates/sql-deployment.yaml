@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: next-chat-sql
+  labels:
+    next: chat
+    name: sql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      next: chat
+      name: sql
+  template:
+    metadata:
+      labels:
+        next: chat
+        name: sql
+    spec:
+      containers:
+      - name: app
+        image: mysql:8.0.26
+        ports:
+          - name: mysql-port
+            containerPort: 3306
+            protocol: TCP
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: qqq111
