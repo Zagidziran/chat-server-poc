@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+   tags:
+   - v*.*.*
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test 'Tests.Unit/Tests.Unit.csproj' --no-build --verbosity normal 
+    
+    - name: Pubblish Configurator
+      run: dotnet publish ./Configurator/Configurator.csproj -r alpine-x64 --self-contained false -o ./Configurator -c Release -f net5.0
+    - name: Build the Docker image
+      run: docker build ./Configurator --file Dockerfile --tag next-chat/configurator:${{ steps.get_version.outputs.VERSION }} --tag next-chat/configurator:latest
+
+    - name: Pubblish Server
+      run: dotnet publish ./NextServer/NextServer.csproj -r alpine-x64 --self-contained false -o ./NextServer -c Release -f net5.0
+    - name: Build the Docker image
+      run: docker build ./NextServer --file Dockerfile --tag next-chat/server:${{ steps.get_version.outputs.VERSION }} --tag next-chat/server:latest
+
+    - name: Pubblish Auto Tests
+      run: dotnet publish ./Tests.Auto/Tests.Auto.csproj -r alpine-x64 --self-contained false -o ./Tests.Auto -c Release -f net5.0
+    - name: Build the Docker image
+      run: docker build ./Tests.Auto --file Dockerfile --tag next-chat/tests:${{ steps.get_version.outputs.VERSION }} --tag next-chat/tests:latest
+
