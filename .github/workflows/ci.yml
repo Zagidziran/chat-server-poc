@@ -2,11 +2,8 @@ name: ci
 
 on:
   push:
-    tags: 
-    - v*.*.*
-    branches: 
-    - main
-  
+   tags:
+   - v*.*.*
 
 jobs:
   build:
@@ -15,24 +12,31 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup NuGet.exe for use with actions
-      uses: NuGet/setup-nuget@v1.0.5
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
     - name: Get the version
       id: get_version
-      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}         
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --configuration Release -p:Version=${{ steps.get_version.outputs.VERSION }}
+      run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal --configuration Release 
-    - name: Pack AwaitableWaitHandle
-      run: dotnet pack --no-build --configuration Release AwaitableWaitHandle/AwaitableWaitHandle.csproj --output . -p:PackageVersion=${{ steps.get_version.outputs.VERSION }}
-    - name: Pack SpinMonitor
-      run: dotnet pack --no-build --configuration Release SpinMonitor/SpinMonitor.csproj --output . -p:PackageVersion=${{ steps.get_version.outputs.VERSION }}
-    - name: PushNuget
-      run: dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
+      run: dotnet test 'Tests.Unit/Tests.Unit.csproj' --no-build --verbosity normal 
+    
+    - name: Pubblish Configurator
+      run: dotnet publish ./Configurator/Configurator.csproj -r alpine-x64 --self-contained false -o ./Configurator -c Release -f net5.0
+    - name: Build the Docker image
+      run: docker build ./Configurator --file Dockerfile --tag next-chat/configurator:${{ steps.get_version.outputs.VERSION }} --tag next-chat/configurator:latest
+
+    - name: Pubblish Server
+      run: dotnet publish ./NextServer/NextServer.csproj -r alpine-x64 --self-contained false -o ./NextServer -c Release -f net5.0
+    - name: Build the Docker image
+      run: docker build ./NextServer --file Dockerfile --tag next-chat/server:${{ steps.get_version.outputs.VERSION }} --tag next-chat/server:latest
+
+    - name: Pubblish Auto Tests
+      run: dotnet publish ./Tests.Auto/Tests.Auto.csproj -r alpine-x64 --self-contained false -o ./Tests.Auto -c Release -f net5.0
+    - name: Build the Docker image
+      run: docker build ./Tests.Auto --file Dockerfile --tag next-chat/tests:${{ steps.get_version.outputs.VERSION }} --tag next-chat/tests:latest
