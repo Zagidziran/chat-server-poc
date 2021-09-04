@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: next-chat-server
-        image: next-chat/server:latest
+        image: "grayscale/next-chat-server:latest"
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http

@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: next-chat-configurator
-        image: next-chat/configurator:latest
+        image: "grayscale/next-chat-configurator:latest"
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
           - name: sql__connectionString
