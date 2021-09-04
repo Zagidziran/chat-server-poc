@@ -1,0 +1,66 @@
+name: ci
+
+on:
+  push:
+   tags:
+   - v*.*.*
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test 'Tests.Unit/Tests.Unit.csproj' --no-build --verbosity normal 
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1.10.0
+      with:
+        username: ${{ secrets.DOCKERHUB_LOGIN }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Pubblish Configurator
+      run: dotnet publish ./Configurator/Configurator.csproj -r alpine-x64 --self-contained false -o ./Configurator -c Release -f net5.0
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2.7.0
+      with:
+        context: ./Configurator
+        push: true
+        tags: |
+          grayscale/next-chat-configurator:latest
+          grayscale/next-chat-configurator:${{ steps.get_version.outputs.VERSION }}
+
+    - name: Pubblish Server
+      run: dotnet publish ./NextServer/NextServer.csproj -r alpine-x64 --self-contained false -o ./NextServer -c Release -f net5.0
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2.7.0
+      with:
+        context: ./NextServer
+        push: true
+        tags: |
+          grayscale/next-chat-server:latest
+          grayscale/next-chat-server:${{ steps.get_version.outputs.VERSION }}
+
+    - name: Pubblish Auto Tests
+      run: dotnet publish ./Tests.Auto/Tests.Auto.csproj -r alpine-x64 --self-contained false -o ./Tests.Auto -c Release -f net5.0
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2.7.0
+      with:
+        context: ./Tests.Auto
+        push: true
+        tags: |
+          grayscale/next-chat-tests:latest
+          grayscale/next-chat-tests:${{ steps.get_version.outputs.VERSION }}
