@@ -40,8 +40,8 @@ jobs:
         context: ./Configurator
         push: true
         tags: |
-          grayscale/next-chat/configurator:latest
-          grayscale/next-chat/configurator:${{ steps.get_version.outputs.VERSION }}
+          grayscale/next-chat-configurator:latest
+          grayscale/next-chat-configurator:${{ steps.get_version.outputs.VERSION }}
 
     - name: Pubblish Server
       run: dotnet publish ./NextServer/NextServer.csproj -r alpine-x64 --self-contained false -o ./NextServer -c Release -f net5.0
@@ -51,8 +51,8 @@ jobs:
         context: ./NextServer
         push: true
         tags: |
-          grayscale/next-chat/server:latest
-          grayscale/next-chat/server:${{ steps.get_version.outputs.VERSION }}
+          grayscale/next-chat-server:latest
+          grayscale/next-chat-server:${{ steps.get_version.outputs.VERSION }}
 
     - name: Pubblish Auto Tests
       run: dotnet publish ./Tests.Auto/Tests.Auto.csproj -r alpine-x64 --self-contained false -o ./Tests.Auto -c Release -f net5.0
@@ -62,5 +62,5 @@ jobs:
         context: ./Tests.Auto
         push: true
         tags: |
-          grayscale/next-chat/tests:latest
-          grayscale/next-chat/tests:${{ steps.get_version.outputs.VERSION }}
+          grayscale/next-chat-tests:latest
+          grayscale/next-chat-tests:${{ steps.get_version.outputs.VERSION }}
