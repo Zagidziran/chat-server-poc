@@ -25,18 +25,42 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test 'Tests.Unit/Tests.Unit.csproj' --no-build --verbosity normal 
-    
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1.10.0
+      with:
+        username: ${{ secrets.DOCKERHUB_LOGIN }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
     - name: Pubblish Configurator
       run: dotnet publish ./Configurator/Configurator.csproj -r alpine-x64 --self-contained false -o ./Configurator -c Release -f net5.0
-    - name: Build the Docker image
-      run: docker build ./Configurator --file Dockerfile --tag next-chat/configurator:${{ steps.get_version.outputs.VERSION }} --tag next-chat/configurator:latest
+    - name: Build and push Docker image
+      uses: docker/build-push-action@2.7.0
+      with:
+        context: ./Configurator
+        push: true
+        tags: |
+          next-chat/configurator:latest
+          next-chat/configurator:${{ steps.get_version.outputs.VERSION }}
 
     - name: Pubblish Server
       run: dotnet publish ./NextServer/NextServer.csproj -r alpine-x64 --self-contained false -o ./NextServer -c Release -f net5.0
-    - name: Build the Docker image
-      run: docker build ./NextServer --file Dockerfile --tag next-chat/server:${{ steps.get_version.outputs.VERSION }} --tag next-chat/server:latest
+    - name: Build and push Docker image
+      uses: docker/build-push-action@2.7.0
+      with:
+        context: ./NextServer
+        push: true
+        tags: |
+          next-chat/server:latest
+          next-chat/server:${{ steps.get_version.outputs.VERSION }}
 
     - name: Pubblish Auto Tests
       run: dotnet publish ./Tests.Auto/Tests.Auto.csproj -r alpine-x64 --self-contained false -o ./Tests.Auto -c Release -f net5.0
-    - name: Build the Docker image
-      run: docker build ./Tests.Auto --file Dockerfile --tag next-chat/tests:${{ steps.get_version.outputs.VERSION }} --tag next-chat/tests:latest
+    - name: Build and push Docker image
+      uses: docker/build-push-action@2.7.0
+      with:
+        context: ./Tests.Auto
+        push: true
+        tags: |
+          next-chat/tests:latest
+          next-chat/tests:${{ steps.get_version.outputs.VERSION }}
