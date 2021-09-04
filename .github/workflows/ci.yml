@@ -2,8 +2,8 @@ name: ci
 
 on:
   push:
-   tags:
-   - v*.*.*
+    tags: 
+    - v*.*.*
 
 jobs:
   build:
@@ -12,16 +12,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.0.5
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
     - name: Get the version
       id: get_version
-      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}         
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release -p:Version=${{ steps.get_version.outputs.VERSION }}
     - name: Test
-      run: dotnet test 'Tests.Unit/Tests.Unit.csproj' --no-build --verbosity normal 
+      run: dotnet test --no-build --verbosity normal --configuration Release 
+    - name: Pack AwaitableWaitHandle
+      run: dotnet pack --no-build --configuration Release AwaitableWaitHandle/AwaitableWaitHandle.csproj --output . -p:PackageVersion=${{ steps.get_version.outputs.VERSION }}
+    - name: Pack SpinMonitor
+      run: dotnet pack --no-build --configuration Release SpinMonitor/SpinMonitor.csproj --output . -p:PackageVersion=${{ steps.get_version.outputs.VERSION }}
+    - name: PushNuget
+      run: dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
