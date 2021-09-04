@@ -85,3 +85,4 @@ Containers within Kubernetes clusters access each other by internal service name
 - Make integration tests independent. At this moment tests require clear database and no parallelism.
 - Handle multi-server user connection case. At this moment group membership not so fine when a user connected twice.
 - Add readiness probe for Kubernetes containers.
+- Check group presence at join time.

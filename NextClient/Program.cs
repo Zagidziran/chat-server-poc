@@ -10,78 +10,80 @@ using SignalR;
 
 var connected = false;
 INextChatServer server = null!;
-
-while (true)
+try
 {
-    try
+    while (true)
     {
-        if (!connected)
+        try
         {
-            var command = Parser.Default.ParseArguments<ConnectCommand, ByeCommand>(
-                Console.ReadLine()?.Split(' '));
-
-            switch (command)
+            if (!connected)
             {
-                case Parsed<object> {Value: ByeCommand}:
-                    return 0;
+                var command = Parser.Default.ParseArguments<ConnectCommand, ByeCommand>(
+                    Console.ReadLine()?.Split(' '));
 
-                case Parsed<object> {Value: ConnectCommand connect}:
-                    server = await NextChatServerClientFactory.CreateClient(new NextChatConfiguration
+                switch (command)
+                {
+                    case Parsed<object> { Value: ByeCommand }:
+                        return 0;
+
+                    case Parsed<object> { Value: ConnectCommand connect }:
+                        server = await NextChatServerClientFactory.CreateClient(new NextChatConfiguration
                         {
                             Uri = connect.Uri,
                             UserId = connect.UserId
                         },
-                        new WriteToConsoleMessagesHandler());
+                            new WriteToConsoleMessagesHandler());
 
-                    connected = true;
-                    break;
+                        connected = true;
+                        break;
+                }
             }
-        }
-        else
-        {
-            var command = Parser.Default
-                .ParseArguments<CreateCommand, JoinCommand, LeaveCommand, ListCommand, SayCommand, ByeCommand>(
-                    Console.ReadLine()?.Split(' '));
-
-            switch (command)
+            else
             {
-                case Parsed<object> {Value: ByeCommand}:
-                    return 0;
+                var command = Parser.Default
+                    .ParseArguments<CreateCommand, JoinCommand, LeaveCommand, ListCommand, SayCommand, ByeCommand>(
+                        Console.ReadLine()?.Split(' '));
 
-                case Parsed<object> {Value: CreateCommand create}:
-                    await server.CreateGroup(create.GroupId);
-                    break;
+                switch (command)
+                {
+                    case Parsed<object> { Value: ByeCommand }:
+                        return 0;
 
-                case Parsed<object> {Value: JoinCommand join}:
-                    var joinResult = await server.JoinGroup(join.GroupId);
-                    if (joinResult == GroupJoinResult.NoRoom)
-                    {
-                        Console.WriteLine("No room :(");
-                    }
+                    case Parsed<object> { Value: CreateCommand create }:
+                        await server.CreateGroup(create.GroupId);
+                        break;
 
-                    break;
+                    case Parsed<object> { Value: JoinCommand join }:
+                        var joinResult = await server.JoinGroup(join.GroupId);
+                        if (joinResult == GroupJoinResult.NoRoom)
+                        {
+                            Console.WriteLine("No room :(");
+                        }
 
-                case Parsed<object> {Value: LeaveCommand leave}:
-                    await server.LeaveGroup(leave.GroupId);
-                    break;
+                        break;
 
-                case Parsed<object> {Value: ListCommand list}:
-                    var groups = await server.ListGroups();
-                    Console.WriteLine(string.Join(", ", groups.Select(g => g.GroupId)));
-                    break;
+                    case Parsed<object> { Value: LeaveCommand leave }:
+                        await server.LeaveGroup(leave.GroupId);
+                        break;
 
-                case Parsed<object> {Value: SayCommand say}:
-                    await server.SendMessage(say.GroupId, string.Join(' ', say.Message));
-                    break;
+                    case Parsed<object> { Value: ListCommand list }:
+                        var groups = await server.ListGroups();
+                        Console.WriteLine(string.Join(", ", groups.Select(g => g.GroupId)));
+                        break;
+
+                    case Parsed<object> { Value: SayCommand say }:
+                        await server.SendMessage(say.GroupId, string.Join(' ', say.Message));
+                        break;
+                }
             }
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex.Message);
-    }
-    finally
-    {
-        (server as IDisposable)?.Dispose();
-    }
+}
+finally
+{
+    (server as IDisposable)?.Dispose();
 }
