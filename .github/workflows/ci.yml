@@ -35,7 +35,7 @@ jobs:
     - name: Pubblish Configurator
       run: dotnet publish ./Configurator/Configurator.csproj -r alpine-x64 --self-contained false -o ./Configurator -c Release -f net5.0
     - name: Build and push Docker image
-      uses: docker/build-push-action@2.7.0
+      uses: docker/build-push-action@v2.7.0
       with:
         context: ./Configurator
         push: true
@@ -46,7 +46,7 @@ jobs:
     - name: Pubblish Server
       run: dotnet publish ./NextServer/NextServer.csproj -r alpine-x64 --self-contained false -o ./NextServer -c Release -f net5.0
     - name: Build and push Docker image
-      uses: docker/build-push-action@2.7.0
+      uses: docker/build-push-action@v2.7.0
       with:
         context: ./NextServer
         push: true
@@ -57,7 +57,7 @@ jobs:
     - name: Pubblish Auto Tests
       run: dotnet publish ./Tests.Auto/Tests.Auto.csproj -r alpine-x64 --self-contained false -o ./Tests.Auto -c Release -f net5.0
     - name: Build and push Docker image
-      uses: docker/build-push-action@2.7.0
+      uses: docker/build-push-action@v2.7.0
       with:
         context: ./Tests.Auto
         push: true
