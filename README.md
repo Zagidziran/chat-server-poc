@@ -184,3 +184,4 @@ Containers within Kubernetes clusters access each other by internal service name
 - Check group presence at join time.
 - Goup join and history send can be merged to single server operation.
 - Group membership shold be set with expiration and clients should refresh it periodically.
+- Move logic form a NextChatHub class to a dedicated service in core layer.
