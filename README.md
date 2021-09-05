@@ -90,7 +90,7 @@ Lists available groups on the server.
 
 Example:
 ````
-List
+list
 ````
 
 #### Create
