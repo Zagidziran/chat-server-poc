@@ -44,6 +44,9 @@ Messages history is stored at the MySql database.
 
 The server is asp.net core application with SignalR hub. 
 
+### Design
+A server uses a SignalR as the communication protocol, Redis streams as messaging layer, Redis as groups persistence layer, and MySql for a messages history. The idea is to keep all required for communication information close to transport layer. Messaging history is moved to separate storage service as far the Redis is not designed to persist large data sets. 
+
 ### Authorization
 The server trusts any authorization header value and recognizes it as user id. No Bearer or any other prefix is need except when your user name starts from Bearer.
 
@@ -52,6 +55,9 @@ By default, the only instance of the server deployed. However, the only user ses
 If we go with the one of the msot popular solutions Nginx Ingress Controller we need to define an ingress object for the Next Chart kubernetes service. 
 Instructions how to [configure sticky sessions on ingress for Nginx ingress controller.](https://kubernetes.github.io/ingress-nginx/examples/affinity/cookie/).
 To leverage the number of instances just specify an appropriate value in values.yaml of the Helm chart.
+
+### Reliability 
+As an additional reliability option the design of the server allows users to communicate when messages history service is down.
 
 ### API
 The interface of the hub defined in the 
