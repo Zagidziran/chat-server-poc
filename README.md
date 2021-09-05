@@ -172,7 +172,7 @@ Containers within Kubernetes clusters access each other by internal service name
 # TODO:
 - Add telemetry.
 - Add logging.
-- Add resilence (circuit breaking, retries).
+- Add resilence (circuit breaking, retries, reconnection).
 - Add unsubscribe from group when no user listens for on hub.
 - Add input validation (Filed sizes, group membership, group existence, nulls).
 - Check/add re-subscribe to joined groups on reconnect.
