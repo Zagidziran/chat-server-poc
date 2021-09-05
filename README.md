@@ -12,7 +12,7 @@ Redis and MySql is required dependencies. Included in the chart.
 
 ## Prerequisites
 
-You need a kubectl and helm tools configured on the host you perform a deploy from. 
+You need a kubectl and helm tools configured on the host you perform a deploy. 
 
 # Contents
 
