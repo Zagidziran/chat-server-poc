@@ -1,7 +1,7 @@
 imagePullPolicy: Never
 
 server:
-  replicas: 1 # Increasing this value you must also enable sticky sessions https://kubernetes.github.io/ingress-nginx/examples/affinity/cookie/
+  replicas: 1
 
 sql:
   connectionString: Server=next-chat-sql;Database=next-chat;Uid=root;Pwd=qqq111;Allow User Variables=True;

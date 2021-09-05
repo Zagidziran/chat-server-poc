@@ -1,7 +1,19 @@
+# Owerall
+
+### The name of the solution is Next Chat
+
+Next Chat is a prove of concept of chat server application. Tiny client is also included.
+
+The language of the solution is C# and platform is Net 5.0.
+
+The delivery form is the Helm chart. 
+
+Redis and MySql is required dependencies. Included in the chart.
+
 # Contents
 
 ## Code 
-A code is located at the root of repository. It's here:
+The code is located at the root of repository.
 
 ### .\Tests.Common
 Common classes used in tests projects.
@@ -45,7 +57,14 @@ Application to configure MySql database. Used from Helm hook after the chart dep
 For CI purpose:
 - a Helm folder contains a helm chart
 - a build.ps1 file to build docker images locally
-- git hub actions to perform builds on the CI stage
+- git hub actions to perform builds on the CI stage at the .github/workflows folder
+
+#### ci.yml
+The action builds and tests the solution then produces artifacts.
+The artifacts are a set of docker images are pushed to the dockerhub.io.
+
+#### merge-build.yml 
+The action performs the solution build and test. Used to check pull requests.
 
 # Architecture and Approach
 
@@ -60,7 +79,8 @@ In fact, number of instances is number of replicas of docker container.
 To leverage the number just specify an appropriate value in values.yaml of the Helm chart.
 However, to makes things work you need to configure sticky sessions on your ingress traffic controller. 
 Otherwise, the traffic may rich incorrect pod, which cause disconnections. 
-Instructions how to (configure sticky sessions on ingress for Nginx ingress controller)[https://kubernetes.github.io/ingress-nginx/examples/affinity/cookie/].
+Instructions how to [configure sticky sessions on ingress for Nginx ingress controller.](https://kubernetes.github.io/ingress-nginx/examples/affinity/cookie/)
+There is no ingress object definition within the chart. You also need to define it and configure appropriate traffic routing in your environment.
 
 ## Client
 There is a tiny client in the repository.
@@ -69,6 +89,9 @@ The client is console application with some help. So just test it.
 ## Endpoint
 The default endpoint is http://your-host:5000/next-chat. 
 The host name is depend on your deployment configuration and for a local Kubernetes cluster is localhot.
+
+### Cloud endpoint 
+The service is deployed in the Azure and can be accessed at http://http://20.73.35.46:5000/next-chat
 
 ## Inter cluster communications
 Containers within Kubernetes clusters access each other by internal service name (hardcoded).
