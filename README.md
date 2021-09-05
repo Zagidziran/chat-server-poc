@@ -174,6 +174,7 @@ Containers within Kubernetes clusters access each other by internal service name
 - Add logging.
 - Add resilence (circuit breaking, retries, reconnection).
 - Add unsubscribe from group when no user listens for on hub.
+- Add paging for groups and messages history.
 - Add input validation (Filed sizes, group membership, group existence, nulls).
 - Check/add re-subscribe to joined groups on reconnect.
 - Add PoD crash handling.
